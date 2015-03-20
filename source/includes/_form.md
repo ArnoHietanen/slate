@@ -19,9 +19,53 @@ Responses are delivered to URLs given in the request and signed by using the sam
 
 ### Request signature calculation
 
+> Original POST data
+
+```shell
+POST
+/form/view/payment
+sph-account=sampleAccount001
+sph-merchant=sampleMerchant001
+sph-order=1000123A
+sph-request-id=f47ac10b-58cc-4372-a567-0e02b2c3d479
+sph-amount=990
+sph-currency=EUR
+sph-timestamp=2014-09-18T10:32:59Z
+sph-success-url=https://merchant.example.com/payment/success
+sph-failure-url=https://merchant.example.com/payment/failure
+sph-cancel-url=https://merchant.example.com/payment/cancel
+language=fi
+description=Example payment of 10 balloons á 0,99EUR
+signature=SPH1 account001-key001 040e717d1bd0e3b7ee3d7d11f0f934c3577f457d6fdc52404ccf4e30a835a8c8
+```
+
+> POST data included in the signature calculation, parameters sorted alphabetically
+
+```shell
+POST
+/form/view/payment
+sph-account:sampleAccount001
+sph-amount:990
+sph-cancel-url:https://merchant.example.com/payment/cancel
+sph-currency:EUR
+sph-failure-url:https://merchant.example.com/payment/failure
+sph-merchant:sampleMerchant001
+sph-order:1000123A
+sph-request-id:f47ac10b-58cc-4372-a567-0e02b2c3d479
+sph-success-url:https://merchant.example.com/payment/success
+sph-timestamp:2014-09-18T10:32:59Z
+```
+> Authentication hash using "account001-shared-secret001" as the keyValue and POST data from above:<br />
+HMAC-SHA256(keyValue, data) =><br />
+040e717d1bd0e3b7ee3d7d11f0f934c3577f457d6fdc52404ccf4e30a835a8c8
+
 Signature is calculated from the request parameters with HMAC-SHA256 algorithm using one of the merchant secret keys. The signature value contains “SPH1”, the key ID and the calculated authentication hash as a hexadecimal string separated with spaces “ ” (0x20).
 
 The authentication hash value is calculated from the authentication string using the chosen merchant secret key. The authentication string is formed from the request method, URI and the request parameters beginning with “sph-”-prefix. Values are trimmed and the key-value pairs are concatenated in alphabetical order by the key name. The parameter keys must be in lowercase. Each key and value is separated with a colon (“:”) and the different parameters are separated with a new line (“\n”) at the end of each value.
+
+<aside class="notice">
+The merchant secret key must be replaced every two years with a new one provided by Payment Highway.
+</aside>
 
 ### Response signature calculation
 
@@ -99,17 +143,7 @@ The payment card form is shown in the Payment Highway. The response to the `succ
 
 ### HTTP Request
 
-`/form/view/pay_with_card`
-
-## Payment & Add Card
-
-This method combines a payment and adding a new card to allow getting the card token after a successful payment with a single request.
-
-<img src="/images/sph-add-and-pay-with-card.png">
-
-### HTTP Request
-
-`/form/view/add_and_pay_with_card`
+`POST /form/view/pay_with_card`
 
 > POST the form
 
@@ -128,7 +162,7 @@ sph-cancel-url=https://merchant.example.com/payment/cancel
 language=fi
 description=Example payment of 10 balloons á 0,99EUR
 signature= SPH1 account001-key001 5f8c9c9311cc83de8c240e2255ce86a44f209671be466170e4cfe4a2430911de' \
-	https://v1-hub-staging.sph-test-solinor.com/form/view/add_and_pay_with_card
+	https://v1-hub-staging.sph-test-solinor.com/form/view/pay_with_card
 ```
 
 > Response
@@ -201,3 +235,15 @@ sph-request-id | UUID4 | Request identifier from request
 sph-timestamp | AN | Response timestamp in ISO 8601 <br>combined date and time in UTC.<br>E.g. 2025-09-18T10:33:49Z
 sph-cancel | AN | Cancel reason "CANCEL"
 signature | ANS | Message signature
+
+## Payment & Add Card
+
+This method combines a payment and adding a new card to allow getting the card token after a successful payment with a single request.
+
+<img src="/images/sph-add-and-pay-with-card.png">
+
+### HTTP Request
+
+`POST /form/view/add_and_pay_with_card`
+
+The request and response parameters are exactly the same as in the [Payment](#payment).

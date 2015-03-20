@@ -1,4 +1,4 @@
-# Responses and Error Messages
+# Response and Status Codes
 
 ##RCODE Result Codes
 

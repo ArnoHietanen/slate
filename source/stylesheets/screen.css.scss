@@ -92,6 +92,8 @@ html, body {
   // This is the logo at the top of the ToC
   &>img {
     display: block;
+    margin-left: 20px;
+    margin-top: 20px;
   }
 
   &>.search {
@@ -367,7 +369,7 @@ html, body {
     font-size: 30px;
     padding-top: 0.5em;
     padding-bottom: 0.5em;
-    border-bottom: 1px solid #ccc;
+    //border-bottom: 1px solid #ccc;
     margin-bottom: $h1-margin-bottom;
     margin-top: 2em;
     border-top: 1px solid #ddd;
